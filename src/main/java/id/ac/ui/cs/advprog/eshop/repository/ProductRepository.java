@@ -25,8 +25,7 @@ public class ProductRepository {
     }
 
     public Product findById(String id){
-        while(!productData.isEmpty()){
-            Product product = productData.get(0);
+        for(Product product : productData){
             if(product.getProductId().equals(id)){
                 return product;
             }
