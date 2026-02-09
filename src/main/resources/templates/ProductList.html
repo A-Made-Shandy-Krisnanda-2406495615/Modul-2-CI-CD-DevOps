@@ -16,12 +16,18 @@
         <tr>
             <th scope="col">Product Name</th>
             <th scope="col">Quantity</th>
+            <th scope="col"></th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="product: ${products}">
             <td th:text="${product.productName}"></td>
             <td th:text="${product.productQuantity}"></td>
+            <td style="text-align: right;">
+                <form th:action="@{/product/edit/{id}(id=${product.productId})}" method="get" style="margin: 0;">
+                    <button type="submit">Edit</button>
+                </form>
+            </td>
         </tr>
         </tbody>
     </table>
