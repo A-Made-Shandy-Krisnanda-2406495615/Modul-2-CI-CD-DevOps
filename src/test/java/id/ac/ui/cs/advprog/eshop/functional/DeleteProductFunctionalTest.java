@@ -2,10 +2,12 @@ package id.ac.ui.cs.advprog.eshop.functional;
 
 import io.github.bonigarcia.seljup.SeleniumJupiter;
 import java.time.Duration;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -14,22 +16,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ExtendWith(SeleniumJupiter.class)
-class CreateProductFunctionalTest {
-    /**
-     * The port number assigned to the running application during test execution.
-     * Set automatically during each test run by Spring Framework's test context.
-     */
+class DeleteProductFunctionalTest {
     @LocalServerPort
     private int serverPort;
 
-    /**
-     * The base URL for testing. Default to {@code http://localhost}-
-     */
     @Value("${app.baseUrl:http://localhost}")
     private String testBaseUrl;
 
@@ -41,33 +35,43 @@ class CreateProductFunctionalTest {
     }
 
     @Test
-    void userCanCreateProductAndSeeItInList(ChromeDriver driver) {
-        String productName = "testing-product";
-        String productQuantity = "100";
-
+    void userCanDeleteProductAndItDisappearsFromList(ChromeDriver driver) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
 
-        driver.get(baseUrl);
-        wait.until(ExpectedConditions.titleIs("ADV Shop"));
-        assertEquals("ADV Shop", driver.getTitle());
+        String productName = "product-" + UUID.randomUUID();
+        String productQuantity = "7";
+        createProduct(driver, wait, productName, productQuantity);
 
-        driver.findElement(By.linkText("View Products")).click();
+        By productRow = productRow(productName, productQuantity);
+        wait.until(webDriver -> !webDriver.findElements(productRow).isEmpty());
+
+        WebElement row = driver.findElement(productRow);
+        row.findElement(By.xpath(".//button[normalize-space()='Delete']")).click();
+
         wait.until(ExpectedConditions.titleIs("Product List"));
+        wait.until(webDriver -> webDriver.findElements(productRow).isEmpty());
+        assertTrue(driver.findElements(productRow).isEmpty());
+    }
 
-        driver.findElement(By.linkText("Create Product")).click();
+    private void createProduct(ChromeDriver driver, WebDriverWait wait, String name, String quantity) {
+        driver.get(baseUrl + "/product/create");
         wait.until(ExpectedConditions.titleIs("Create New Product"));
 
-        driver.findElement(By.id("nameInput")).sendKeys(productName);
-        driver.findElement(By.id("quantityInput")).sendKeys(productQuantity);
+        driver.findElement(By.id("nameInput")).sendKeys(name);
+        driver.findElement(By.id("quantityInput")).sendKeys(quantity);
         driver.findElement(By.cssSelector("button[type='submit']")).click();
 
         wait.until(ExpectedConditions.titleIs("Product List"));
-        By createdProductRow = By.xpath(String.format(
-                "//tbody/tr[td[1][normalize-space()='%s'] and td[2][normalize-space()='%s']]",
-                productName,
-                productQuantity));
 
+        By createdProductRow = productRow(name, quantity);
         wait.until(webDriver -> !webDriver.findElements(createdProductRow).isEmpty());
         assertTrue(driver.findElements(createdProductRow).size() >= 1);
+    }
+
+    private static By productRow(String name, String quantity) {
+        return By.xpath(String.format(
+                "//tbody/tr[td[1][normalize-space()='%s'] and td[2][normalize-space()='%s']]",
+                name,
+                quantity));
     }
 }
