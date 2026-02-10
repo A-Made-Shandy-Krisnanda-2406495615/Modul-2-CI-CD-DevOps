@@ -39,7 +39,7 @@ class HomePageFunctionalTest {
         driver.get(baseUrl);
         String pageTitle = driver.getTitle();
         // Verity
-        assertEquals("ADV Shop", pageTitle);
+        assertEquals("eShop", pageTitle);
     }
     @Test
     void welcomeMessage_homePage_isCorrect(ChromeDriver driver) throws Exception {
