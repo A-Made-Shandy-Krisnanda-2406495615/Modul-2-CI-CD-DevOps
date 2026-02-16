@@ -6,7 +6,8 @@ on:
 jobs:
   test:
     name: Run tests
-    runs-on: ubuntu-22.04 steps:
+    runs-on: ubuntu-22.04
+    steps:
         - name: Check out the Git repository
           uses: actions/checkout@v4
         - name: Set up Java toolchain
