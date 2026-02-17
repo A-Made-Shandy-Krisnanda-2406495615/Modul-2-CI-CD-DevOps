@@ -23,6 +23,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ProductControllerTest {
     private static final String PRODUCT_ID = "P-001";
+    private static final String REDIRECT_PRODUCT_LIST = "redirect:/product/list";
 
     @Mock
     private ProductService service;
@@ -51,7 +52,7 @@ class ProductControllerTest {
         String view = controller.productListPost(product, model);
 
         verify(service).create(product);
-        assertEquals("redirect:/product/list", view);
+        assertEquals(REDIRECT_PRODUCT_LIST, view);
     }
 
     @Test
@@ -72,7 +73,7 @@ class ProductControllerTest {
         String view = controller.deleteProduct(PRODUCT_ID);
 
         verify(service).delete(PRODUCT_ID);
-        assertEquals("redirect:/product/list", view);
+        assertEquals(REDIRECT_PRODUCT_LIST, view);
     }
 
     @Test
@@ -94,7 +95,7 @@ class ProductControllerTest {
         String view = controller.editProductPage(PRODUCT_ID, model);
 
         verify(model, never()).addAttribute(eq("product"), any());
-        assertEquals("redirect:/product/list", view);
+        assertEquals(REDIRECT_PRODUCT_LIST, view);
     }
 
     @Test
@@ -105,6 +106,6 @@ class ProductControllerTest {
         String view = controller.editProduct(PRODUCT_ID, product);
 
         verify(service).edit(product);
-        assertEquals("redirect:/product/list", view);
+        assertEquals(REDIRECT_PRODUCT_LIST, view);
     }
 }
