@@ -26,7 +26,7 @@ public class ProductServiceTest {
     ProductServiceImpl productService;
 
     @Test
-    void testCreate_whenProductIdNull_shouldGenerateIdAndSave() {
+    void testCreateWhenProductIdNullShouldGenerateIdAndSave() {
         Product product = new Product();
         product.setProductName(PRODUCT_NAME_BAMBANG);
         product.setProductQuantity(100);
@@ -40,7 +40,7 @@ public class ProductServiceTest {
     }
 
     @Test
-    void testCreate_whenProductIdBlank_shouldGenerateIdAndSave() {
+    void testCreateWhenProductIdBlankShouldGenerateIdAndSave() {
         Product product = new Product();
         product.setProductId("   ");
         product.setProductName(PRODUCT_NAME_BAMBANG);
@@ -54,7 +54,7 @@ public class ProductServiceTest {
     }
 
     @Test
-    void testCreate_whenProductIdProvided_shouldNotOverwriteId() {
+    void testCreateWhenProductIdProvidedShouldNotOverwriteId() {
         Product product = new Product();
         product.setProductId(PRODUCT_ID_ABC);
         product.setProductName(PRODUCT_NAME_BAMBANG);

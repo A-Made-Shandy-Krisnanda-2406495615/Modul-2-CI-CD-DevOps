@@ -23,6 +23,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ProductControllerTest {
     private static final String PRODUCT_ID = "P-001";
+    private static final String MODEL_ATTR_PRODUCT = "product";
     private static final String REDIRECT_PRODUCT_LIST = "redirect:/product/list";
 
     @Mock
@@ -39,7 +40,7 @@ class ProductControllerTest {
         String view = controller.createProductPage(model);
 
         ArgumentCaptor<Product> productCaptor = ArgumentCaptor.forClass(Product.class);
-        verify(model).addAttribute(eq("product"), productCaptor.capture());
+        verify(model).addAttribute(eq(MODEL_ATTR_PRODUCT), productCaptor.capture());
         assertNotNull(productCaptor.getValue());
         assertEquals("CreateProduct", view);
     }
@@ -84,7 +85,7 @@ class ProductControllerTest {
 
         String view = controller.editProductPage(PRODUCT_ID, model);
 
-        verify(model).addAttribute("product", product);
+        verify(model).addAttribute(MODEL_ATTR_PRODUCT, product);
         assertEquals("EditProduct", view);
     }
 
@@ -94,7 +95,7 @@ class ProductControllerTest {
 
         String view = controller.editProductPage(PRODUCT_ID, model);
 
-        verify(model, never()).addAttribute(eq("product"), any());
+        verify(model, never()).addAttribute(eq(MODEL_ATTR_PRODUCT), any());
         assertEquals(REDIRECT_PRODUCT_LIST, view);
     }
 

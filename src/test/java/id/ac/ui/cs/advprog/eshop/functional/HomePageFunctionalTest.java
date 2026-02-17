@@ -34,7 +34,7 @@ class HomePageFunctionalTest {
         baseUrl = String.format("%s:%d", testBaseUrl, serverPort);
     }
     @Test
-    void pageTitle_iscorrect(ChromeDriver driver) throws Exception {
+    void pageTitleIsCorrect(ChromeDriver driver) throws Exception {
         // Exercise
         driver.get(baseUrl);
         String pageTitle = driver.getTitle();
@@ -42,7 +42,7 @@ class HomePageFunctionalTest {
         assertEquals("eShop", pageTitle);
     }
     @Test
-    void welcomeMessage_homePage_isCorrect(ChromeDriver driver) throws Exception {
+    void welcomeMessageHomePageIsCorrect(ChromeDriver driver) throws Exception {
     // Exercise
         driver.get(baseUrl);
         String welcomeMessage = driver.findElement(By.tagName("h3")).getText();

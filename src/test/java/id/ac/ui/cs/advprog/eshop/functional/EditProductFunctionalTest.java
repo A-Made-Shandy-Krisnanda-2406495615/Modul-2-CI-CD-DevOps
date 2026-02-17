@@ -38,7 +38,7 @@ class EditProductFunctionalTest {
     }
 
     @Test
-    void editPage_whenProductNotFound_redirectsToList(ChromeDriver driver) {
+    void editPageWhenProductNotFoundRedirectsToList(ChromeDriver driver) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
 
         driver.get(baseUrl + "/product/edit/not-found");
