@@ -49,7 +49,7 @@ class ProductControllerTest {
         Product product = new Product();
         product.setProductId(PRODUCT_ID);
 
-        String view = controller.productListPost(product, model);
+        String view = controller.productListPost(product);
 
         verify(service).create(product);
         assertEquals(REDIRECT_PRODUCT_LIST, view);
@@ -101,11 +101,13 @@ class ProductControllerTest {
     @Test
     void testEditProduct() {
         Product product = new Product();
+        String pathId = "P-002";
         product.setProductId(PRODUCT_ID);
 
-        String view = controller.editProduct(PRODUCT_ID, product);
+        String view = controller.editProduct(pathId, product);
 
         verify(service).edit(product);
+        assertEquals(pathId, product.getProductId());
         assertEquals(REDIRECT_PRODUCT_LIST, view);
     }
 }
