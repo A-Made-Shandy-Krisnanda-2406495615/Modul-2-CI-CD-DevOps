@@ -16,6 +16,9 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class ProductServiceTest {
+    private static final String PRODUCT_NAME_BAMBANG = "Sampo Cap Bambang";
+    private static final String PRODUCT_ID_ABC = "ABC";
+
     @Mock
     ProductRepository productRepository;
 
@@ -23,9 +26,9 @@ public class ProductServiceTest {
     ProductServiceImpl productService;
 
     @Test
-    void testCreate_whenProductIdNull_shouldGenerateIdAndSave() {
+    void testCreateWhenProductIdNullShouldGenerateIdAndSave() {
         Product product = new Product();
-        product.setProductName("Sampo Cap Bambang");
+        product.setProductName(PRODUCT_NAME_BAMBANG);
         product.setProductQuantity(100);
 
         Product createdProduct = productService.create(product);
@@ -37,10 +40,10 @@ public class ProductServiceTest {
     }
 
     @Test
-    void testCreate_whenProductIdBlank_shouldGenerateIdAndSave() {
+    void testCreateWhenProductIdBlankShouldGenerateIdAndSave() {
         Product product = new Product();
         product.setProductId("   ");
-        product.setProductName("Sampo Cap Bambang");
+        product.setProductName(PRODUCT_NAME_BAMBANG);
         product.setProductQuantity(100);
 
         productService.create(product);
@@ -51,15 +54,15 @@ public class ProductServiceTest {
     }
 
     @Test
-    void testCreate_whenProductIdProvided_shouldNotOverwriteId() {
+    void testCreateWhenProductIdProvidedShouldNotOverwriteId() {
         Product product = new Product();
-        product.setProductId("ABC");
-        product.setProductName("Sampo Cap Bambang");
+        product.setProductId(PRODUCT_ID_ABC);
+        product.setProductName(PRODUCT_NAME_BAMBANG);
         product.setProductQuantity(100);
 
         productService.create(product);
 
-        assertEquals("ABC", product.getProductId());
+        assertEquals(PRODUCT_ID_ABC, product.getProductId());
         verify(productRepository).create(product);
     }
 
@@ -67,7 +70,7 @@ public class ProductServiceTest {
     void testFindAll() {
         Product product1 = new Product();
         product1.setProductId("P1");
-        product1.setProductName("Sampo Cap Bambang");
+        product1.setProductName(PRODUCT_NAME_BAMBANG);
         product1.setProductQuantity(100);
 
         Product product2 = new Product();
@@ -86,7 +89,7 @@ public class ProductServiceTest {
 
     @Test
     void testDelete() {
-        String productId = "ABC";
+        String productId = PRODUCT_ID_ABC;
 
         productService.delete(productId);
 
@@ -95,11 +98,11 @@ public class ProductServiceTest {
 
     @Test
     void testFindById() {
-        String productId = "ABC";
+        String productId = PRODUCT_ID_ABC;
 
         Product product = new Product();
         product.setProductId(productId);
-        product.setProductName("Sampo Cap Bambang");
+        product.setProductName(PRODUCT_NAME_BAMBANG);
         product.setProductQuantity(100);
         when(productRepository.findById(productId)).thenReturn(product);
 
@@ -110,12 +113,12 @@ public class ProductServiceTest {
     @Test
     void testEdit() {
         Product product = new Product();
-        product.setProductId("ABC");
-        product.setProductName("Sampo Cap Bambang");
+        product.setProductId(PRODUCT_ID_ABC);
+        product.setProductName(PRODUCT_NAME_BAMBANG);
         product.setProductQuantity(100);
 
         Product updatedProduct = new Product();
-        updatedProduct.setProductId("ABC");
+        updatedProduct.setProductId(PRODUCT_ID_ABC);
         updatedProduct.setProductName("Sampo Cap Bang");
         updatedProduct.setProductQuantity(50);
 
