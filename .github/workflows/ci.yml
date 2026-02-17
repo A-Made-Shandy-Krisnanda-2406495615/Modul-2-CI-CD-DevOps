@@ -1,24 +1,121 @@
-name: Continuous Integration (CI)
-## Run CI jobs on all branches by default on:
+name: CI
+
 on:
   push:
+    branches: [master]
   pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+  pull-requests: read
+
 jobs:
-  test:
-    name: Run tests
-    runs-on: ubuntu-22.04
+  build-test-lint-sonar:
+    runs-on: ubuntu-latest
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      SONAR_PROJECT_KEY: ${{ vars.SONAR_PROJECT_KEY }}
+      SONAR_ORGANIZATION: ${{ vars.SONAR_ORGANIZATION }}
+
     steps:
-        - name: Check out the Git repository
-          uses: actions/checkout@v4
-        - name: Set up Java toolchain
-          uses: actions/setup-java@v4
-          with:
-            distribution: "temurin"
-            java-version: "21"
-            cache: "gradle"
-        - name: Make gradlew executable
-          run: chmod +x ./gradlew
-        - name: Run unit tests
-          run: ./gradlew test
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
 
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Test + Lint (PMD)
+        run: ./gradlew --no-daemon clean check jacocoTestReport
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports
+          path: |
+            build/reports
+            build/test-results
+
+      - name: SonarCloud Scan
+        if: ${{ env.SONAR_TOKEN != '' && env.SONAR_PROJECT_KEY != '' && env.SONAR_ORGANIZATION != '' }}
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.host.url=https://sonarcloud.io
+            -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
+            -Dsonar.organization=${{ env.SONAR_ORGANIZATION }}
+            -Dsonar.java.binaries=build/classes
+            -Dsonar.coverage.jacoco.xmlReportPaths=build/reports/jacoco/test/jacocoTestReport.xml
+
+      - name: Fail if SonarCloud Quality Gate fails
+        if: ${{ env.SONAR_TOKEN != '' && env.SONAR_PROJECT_KEY != '' && env.SONAR_ORGANIZATION != '' }}
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64
+          import json
+          import os
+          import time
+          import urllib.request
+
+          token = os.environ["SONAR_TOKEN"]
+          report_file = ".scannerwork/report-task.txt"
+
+          if not os.path.exists(report_file):
+              raise SystemExit(".scannerwork/report-task.txt not found after Sonar scan")
+
+          with open(report_file, "r", encoding="utf-8") as f:
+              props = dict(line.strip().split("=", 1) for line in f if "=" in line)
+
+          ce_task_url = props.get("ceTaskUrl")
+          if not ce_task_url:
+              raise SystemExit("ceTaskUrl missing in .scannerwork/report-task.txt")
+
+          def get(url: str):
+              req = urllib.request.Request(url)
+              auth = base64.b64encode((token + ":").encode()).decode()
+              req.add_header("Authorization", "Basic " + auth)
+              with urllib.request.urlopen(req) as resp:
+                  return json.loads(resp.read().decode())
+
+          analysis_id = None
+          for _ in range(60):
+              data = get(ce_task_url)
+              status = data["task"]["status"]
+              print("Sonar CE status:", status)
+              if status == "SUCCESS":
+                  analysis_id = data["task"].get("analysisId")
+                  break
+              if status in ("PENDING", "IN_PROGRESS"):
+                  time.sleep(5)
+                  continue
+              raise SystemExit(f"Unexpected Sonar CE status: {status}")
+
+          if not analysis_id:
+              raise SystemExit("analysisId not found; Sonar task may not have finished")
+
+          qg = get(f"https://sonarcloud.io/api/qualitygates/project_status?analysisId={analysis_id}")
+          qg_status = qg["projectStatus"]["status"]
+          print("Quality Gate:", qg_status)
+          if qg_status != "OK":
+              raise SystemExit("Quality Gate failed")
+          PY
+
+      - name: Skip SonarCloud
+        if: ${{ !(env.SONAR_TOKEN != '' && env.SONAR_PROJECT_KEY != '' && env.SONAR_ORGANIZATION != '') }}
+        run: echo "Skipping SonarCloud scan because SONAR_TOKEN/SONAR_PROJECT_KEY/SONAR_ORGANIZATION are not set."
