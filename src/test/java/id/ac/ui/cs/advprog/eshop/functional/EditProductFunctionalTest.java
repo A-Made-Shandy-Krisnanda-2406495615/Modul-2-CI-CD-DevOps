@@ -22,6 +22,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ExtendWith(SeleniumJupiter.class)
 class EditProductFunctionalTest {
+    private static final String PRODUCT_LIST_TITLE = "Product List";
+
     @LocalServerPort
     private int serverPort;
 
@@ -36,13 +38,13 @@ class EditProductFunctionalTest {
     }
 
     @Test
-    void editPage_whenProductNotFound_redirectsToList(ChromeDriver driver) {
+    void editPageWhenProductNotFoundRedirectsToList(ChromeDriver driver) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
 
         driver.get(baseUrl + "/product/edit/not-found");
 
-        wait.until(ExpectedConditions.titleIs("Product List"));
-        assertEquals("Product List", driver.getTitle());
+        wait.until(ExpectedConditions.titleIs(PRODUCT_LIST_TITLE));
+        assertEquals(PRODUCT_LIST_TITLE, driver.getTitle());
     }
 
     @Test
@@ -77,7 +79,7 @@ class EditProductFunctionalTest {
 
         driver.findElement(By.cssSelector("button[type='submit']")).click();
 
-        wait.until(ExpectedConditions.titleIs("Product List"));
+        wait.until(ExpectedConditions.titleIs(PRODUCT_LIST_TITLE));
 
         By updatedProductRow = productRow(updatedName, updatedQuantity);
         wait.until(webDriver -> !webDriver.findElements(updatedProductRow).isEmpty());
@@ -97,7 +99,7 @@ class EditProductFunctionalTest {
         quantityInput.sendKeys(quantity);
 
         driver.findElement(By.cssSelector("button[type='submit']")).click();
-        wait.until(ExpectedConditions.titleIs("Product List"));
+        wait.until(ExpectedConditions.titleIs(PRODUCT_LIST_TITLE));
 
         By createdProductRow = productRow(name, quantity);
         wait.until(webDriver -> !webDriver.findElements(createdProductRow).isEmpty());

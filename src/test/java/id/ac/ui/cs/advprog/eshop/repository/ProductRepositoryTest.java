@@ -13,17 +13,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ProductRepositoryTest {
+    private static final String DEFAULT_PRODUCT_ID = "eb558e9f-1c39-460e-8860-71af6af63bd6";
+    private static final String DEFAULT_PRODUCT_NAME = "Sampo Cap Bambang";
 
     @InjectMocks
     ProductRepository productRepository;
-    @BeforeEach
-    void setUp() {
-    }
     @Test
     void testCreatAndFind() {
         Product product = new Product();
-        product.setProductId("eb558e9f-1c39-460e-8860-71af6af63bd6");
-        product.setProductName("Sampo Cap Bambang");
+        product.setProductId(DEFAULT_PRODUCT_ID);
+        product.setProductName(DEFAULT_PRODUCT_NAME);
         product.setProductQuantity(100);
         productRepository.create(product);
 
@@ -43,8 +42,8 @@ public class ProductRepositoryTest {
     @Test
     void testFindAllIfMoreThanOneProduct() {
         Product product1 = new Product();
-        product1.setProductId("eb558e9f-1c39-460e-8860-71af6af63bd6");
-        product1.setProductName("Sampo Cap Bambang");
+        product1.setProductId(DEFAULT_PRODUCT_ID);
+        product1.setProductName(DEFAULT_PRODUCT_NAME);
         product1.setProductQuantity(100);
         productRepository.create(product1);
 
@@ -66,8 +65,8 @@ public class ProductRepositoryTest {
     @Test
     void testFindById() {
         Product product1 = new Product();
-        product1.setProductId("eb558e9f-1c39-460e-8860-71af6af63bd6");
-        product1.setProductName("Sampo Cap Bambang");
+        product1.setProductId(DEFAULT_PRODUCT_ID);
+        product1.setProductName(DEFAULT_PRODUCT_NAME);
         product1.setProductQuantity(100);
         productRepository.create(product1);
 
@@ -78,8 +77,8 @@ public class ProductRepositoryTest {
     @Test
     void testDeleteProduct() {
         Product product = new Product();
-        product.setProductId("eb558e9f-1c39-460e-8860-71af6af63bd6");
-        product.setProductName("Sampo Cap Bambang");
+        product.setProductId(DEFAULT_PRODUCT_ID);
+        product.setProductName(DEFAULT_PRODUCT_NAME);
         product.setProductQuantity(100);
         productRepository.create(product);
 
@@ -92,13 +91,13 @@ public class ProductRepositoryTest {
     @Test
     void testEditProduct() {
         Product oldProduct = new Product();
-        oldProduct.setProductId("eb558e9f-1c39-460e-8860-71af6af63bd6");
-        oldProduct.setProductName("Sampo Cap Bambang");
+        oldProduct.setProductId(DEFAULT_PRODUCT_ID);
+        oldProduct.setProductName(DEFAULT_PRODUCT_NAME);
         oldProduct.setProductQuantity(100);
         productRepository.create(oldProduct);
 
         Product newProduct = new Product();
-        newProduct.setProductId("eb558e9f-1c39-460e-8860-71af6af63bd6");
+        newProduct.setProductId(DEFAULT_PRODUCT_ID);
         newProduct.setProductName("Sampo Cap Bang");
         newProduct.setProductQuantity(20);
         productRepository.edit(newProduct);
