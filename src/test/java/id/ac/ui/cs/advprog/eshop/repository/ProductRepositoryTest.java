@@ -1,7 +1,6 @@
 package id.ac.ui.cs.advprog.eshop.repository;
 
 import id.ac.ui.cs.advprog.eshop.model.Product;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -70,8 +69,8 @@ public class ProductRepositoryTest {
         product1.setProductQuantity(100);
         productRepository.create(product1);
 
-        assertEquals(product1,  productRepository.findById(product1.getProductId()));
-        assertNull(productRepository.findById("000000"));
+        assertEquals(product1, productRepository.findById(product1.getProductId()).orElse(null));
+        assertTrue(productRepository.findById("000000").isEmpty());
     }
 
     @Test
@@ -89,40 +88,15 @@ public class ProductRepositoryTest {
     }
 
     @Test
-    void testEditProduct() {
-        Product oldProduct = new Product();
-        oldProduct.setProductId(DEFAULT_PRODUCT_ID);
-        oldProduct.setProductName(DEFAULT_PRODUCT_NAME);
-        oldProduct.setProductQuantity(100);
-        productRepository.create(oldProduct);
+    void testFindByIdOnDeletedProductShouldBeEmpty() {
+        Product product = new Product();
+        product.setProductId(DEFAULT_PRODUCT_ID);
+        product.setProductName(DEFAULT_PRODUCT_NAME);
+        product.setProductQuantity(100);
+        productRepository.create(product);
 
-        Product newProduct = new Product();
-        newProduct.setProductId(DEFAULT_PRODUCT_ID);
-        newProduct.setProductName("Sampo Cap Bang");
-        newProduct.setProductQuantity(20);
-        productRepository.edit(newProduct);
+        productRepository.deleteById(DEFAULT_PRODUCT_ID);
 
-        Product updatedProduct = productRepository.findById(newProduct.getProductId());
-
-        assertEquals(newProduct.getProductId(), updatedProduct.getProductId());
-        assertEquals(newProduct.getProductName(), updatedProduct.getProductName());
-        assertEquals(newProduct.getProductQuantity(), updatedProduct.getProductQuantity());
-
-        Product fakeProduct = new Product();
-        fakeProduct.setProductId("eb558e9f-1c39-460e-8860");
-        fakeProduct.setProductName("Sampo Cap Bang");
-        fakeProduct.setProductQuantity(20);
-        productRepository.edit(fakeProduct);
-
-        assertNull(productRepository.edit(fakeProduct));
-
-        Product nullProduct = new Product();
-        productRepository.edit(nullProduct);
-        assertNull(productRepository.edit(nullProduct));
-
-        assertNull(productRepository.edit(null));
-
-
-
+        assertTrue(productRepository.findById(DEFAULT_PRODUCT_ID).isEmpty());
     }
 }

@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
@@ -104,28 +105,18 @@ public class ProductServiceTest {
         product.setProductId(productId);
         product.setProductName(PRODUCT_NAME_BAMBANG);
         product.setProductQuantity(100);
-        when(productRepository.findById(productId)).thenReturn(product);
+        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
 
         assertSame(product, productService.findById(productId));
         verify(productRepository).findById(productId);
     }
 
     @Test
-    void testEdit() {
-        Product product = new Product();
-        product.setProductId(PRODUCT_ID_ABC);
-        product.setProductName(PRODUCT_NAME_BAMBANG);
-        product.setProductQuantity(100);
+    void testFindByIdWhenProductNotFoundShouldReturnNull() {
+        when(productRepository.findById(PRODUCT_ID_ABC)).thenReturn(Optional.empty());
 
-        Product updatedProduct = new Product();
-        updatedProduct.setProductId(PRODUCT_ID_ABC);
-        updatedProduct.setProductName("Sampo Cap Bang");
-        updatedProduct.setProductQuantity(50);
-
-        when(productRepository.edit(product)).thenReturn(updatedProduct);
-
-        assertSame(updatedProduct, productService.edit(product));
-        verify(productRepository).edit(product);
+        assertNull(productService.findById(PRODUCT_ID_ABC));
+        verify(productRepository).findById(PRODUCT_ID_ABC);
     }
 
     @Test
@@ -139,13 +130,25 @@ public class ProductServiceTest {
         requestProduct.setProductName("Sampo Cap Bang");
         requestProduct.setProductQuantity(50);
 
-        when(productRepository.findById(PRODUCT_ID_ABC)).thenReturn(existingProduct);
+        when(productRepository.findById(PRODUCT_ID_ABC)).thenReturn(Optional.of(existingProduct));
 
         productService.update(PRODUCT_ID_ABC, requestProduct);
 
         verify(productRepository).findById(PRODUCT_ID_ABC);
         assertEquals("Sampo Cap Bang", existingProduct.getProductName());
         assertEquals(50, existingProduct.getProductQuantity());
+    }
+
+    @Test
+    void testUpdateWhenExistingProductNotFoundShouldDoNothing() {
+        Product requestProduct = new Product();
+        requestProduct.setProductName("Sampo Cap Bang");
+        requestProduct.setProductQuantity(50);
+        when(productRepository.findById(PRODUCT_ID_ABC)).thenReturn(Optional.empty());
+
+        productService.update(PRODUCT_ID_ABC, requestProduct);
+
+        verify(productRepository).findById(PRODUCT_ID_ABC);
     }
 
 }

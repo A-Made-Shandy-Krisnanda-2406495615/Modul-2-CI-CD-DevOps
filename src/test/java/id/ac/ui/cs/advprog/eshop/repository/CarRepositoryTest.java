@@ -8,7 +8,6 @@ import java.util.Iterator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -32,14 +31,13 @@ class CarRepositoryTest {
     }
 
     @Test
-    void testCreateWhenIdNullShouldGenerateId() {
+    void testCreateWhenIdNullShouldKeepNullId() {
         Car car = buildCar(null, CAR_NAME_BMW, COLOR_BLACK, 2);
 
         Car createdCar = carRepository.create(car);
 
         assertSame(car, createdCar);
-        assertNotNull(createdCar.getCarId());
-        assertFalse(createdCar.getCarId().isBlank());
+        assertNull(createdCar.getCarId());
     }
 
     @Test
@@ -57,10 +55,10 @@ class CarRepositoryTest {
         Car car = buildCar(CAR_ID_001, CAR_NAME_BMW, COLOR_BLACK, 2);
         carRepository.create(car);
 
-        Car foundCar = carRepository.findById(CAR_ID_001);
+        Car foundCar = carRepository.findById(CAR_ID_001).orElse(null);
 
         assertSame(car, foundCar);
-        assertNull(carRepository.findById(CAR_ID_404));
+        assertTrue(carRepository.findById(CAR_ID_404).isEmpty());
     }
 
     @Test
@@ -111,8 +109,8 @@ class CarRepositoryTest {
 
         carRepository.delete(CAR_ID_001);
 
-        assertNull(carRepository.findById(CAR_ID_001));
-        assertSame(secondCar, carRepository.findById(CAR_ID_002));
+        assertTrue(carRepository.findById(CAR_ID_001).isEmpty());
+        assertSame(secondCar, carRepository.findById(CAR_ID_002).orElse(null));
     }
 
     private Car buildCar(String carId, String carName, String carColor, int carQuantity) {
