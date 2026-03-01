@@ -105,9 +105,9 @@ class ProductControllerTest {
         String pathId = "P-002";
         product.setProductId(PRODUCT_ID);
 
-        String view = controller.editProductPost(product, model);
+        String view = controller.editProductPost(pathId, product, model);
 
-        verify(service).edit(product);
+        verify(service).update(pathId, product);
         assertEquals(pathId, product.getProductId());
         assertEquals(REDIRECT_PRODUCT_LIST, view);
     }
