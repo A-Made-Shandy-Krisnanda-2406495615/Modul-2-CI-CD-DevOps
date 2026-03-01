@@ -17,6 +17,15 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CarServiceImplTest {
+    private static final String CAR_ID_001 = "CAR-001";
+    private static final String CAR_ID_002 = "CAR-002";
+    private static final String CAR_NAME_BMW = "BMW";
+    private static final String CAR_NAME_AUDI = "Audi";
+    private static final String CAR_NAME_PORSCHE = "Porsche";
+    private static final String COLOR_BLACK = "Black";
+    private static final String COLOR_WHITE = "White";
+    private static final String COLOR_RED = "Red";
+
     @Mock
     private CarRepository carRepository;
 
@@ -25,7 +34,7 @@ class CarServiceImplTest {
 
     @Test
     void testCreate() {
-        Car car = buildCar("CAR-001", "BMW", "Black", 2);
+        Car car = buildCar(CAR_ID_001, CAR_NAME_BMW, COLOR_BLACK, 2);
 
         Car createdCar = carService.create(car);
 
@@ -35,8 +44,8 @@ class CarServiceImplTest {
 
     @Test
     void testFindAll() {
-        Car firstCar = buildCar("CAR-001", "BMW", "Black", 2);
-        Car secondCar = buildCar("CAR-002", "Audi", "White", 3);
+        Car firstCar = buildCar(CAR_ID_001, CAR_NAME_BMW, COLOR_BLACK, 2);
+        Car secondCar = buildCar(CAR_ID_002, CAR_NAME_AUDI, COLOR_WHITE, 3);
         when(carRepository.findAll()).thenReturn(List.of(firstCar, secondCar).iterator());
 
         List<Car> result = carService.findAll();
@@ -49,29 +58,29 @@ class CarServiceImplTest {
 
     @Test
     void testFindById() {
-        Car car = buildCar("CAR-001", "BMW", "Black", 2);
-        when(carRepository.findById("CAR-001")).thenReturn(car);
+        Car car = buildCar(CAR_ID_001, CAR_NAME_BMW, COLOR_BLACK, 2);
+        when(carRepository.findById(CAR_ID_001)).thenReturn(car);
 
-        Car foundCar = carService.findById("CAR-001");
+        Car foundCar = carService.findById(CAR_ID_001);
 
         assertSame(car, foundCar);
-        verify(carRepository).findById("CAR-001");
+        verify(carRepository).findById(CAR_ID_001);
     }
 
     @Test
     void testUpdate() {
-        Car updatedCar = buildCar("CAR-001", "Porsche", "Red", 9);
+        Car updatedCar = buildCar(CAR_ID_001, CAR_NAME_PORSCHE, COLOR_RED, 9);
 
-        carService.update("CAR-001", updatedCar);
+        carService.update(CAR_ID_001, updatedCar);
 
-        verify(carRepository).update("CAR-001", updatedCar);
+        verify(carRepository).update(CAR_ID_001, updatedCar);
     }
 
     @Test
     void testDeleteCarById() {
-        carService.deleteCarById("CAR-001");
+        carService.deleteCarById(CAR_ID_001);
 
-        verify(carRepository).delete("CAR-001");
+        verify(carRepository).delete(CAR_ID_001);
     }
 
     private Car buildCar(String carId, String carName, String carColor, int carQuantity) {
