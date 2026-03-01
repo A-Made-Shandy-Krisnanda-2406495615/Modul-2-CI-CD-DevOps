@@ -50,7 +50,7 @@ class ProductControllerTest {
         Product product = new Product();
         product.setProductId(PRODUCT_ID);
 
-        String view = controller.productListPost(product);
+        String view = controller.createProductPost(product, model);
 
         verify(service).create(product);
         assertEquals(REDIRECT_PRODUCT_LIST, view);
@@ -63,7 +63,7 @@ class ProductControllerTest {
         List<Product> products = List.of(product);
         when(service.findAll()).thenReturn(products);
 
-        String view = controller.listProductPage(model);
+        String view = controller.productListPage(model);
 
         verify(model).addAttribute("products", products);
         assertEquals("ProductList", view);
@@ -105,7 +105,7 @@ class ProductControllerTest {
         String pathId = "P-002";
         product.setProductId(PRODUCT_ID);
 
-        String view = controller.editProduct(pathId, product);
+        String view = controller.editProductPost(product, model);
 
         verify(service).edit(product);
         assertEquals(pathId, product.getProductId());
