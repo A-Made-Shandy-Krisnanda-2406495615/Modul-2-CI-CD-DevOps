@@ -128,4 +128,24 @@ public class ProductServiceTest {
         verify(productRepository).edit(product);
     }
 
+    @Test
+    void testUpdateShouldModifyExistingProduct() {
+        Product existingProduct = new Product();
+        existingProduct.setProductId(PRODUCT_ID_ABC);
+        existingProduct.setProductName(PRODUCT_NAME_BAMBANG);
+        existingProduct.setProductQuantity(100);
+
+        Product requestProduct = new Product();
+        requestProduct.setProductName("Sampo Cap Bang");
+        requestProduct.setProductQuantity(50);
+
+        when(productRepository.findById(PRODUCT_ID_ABC)).thenReturn(existingProduct);
+
+        productService.update(PRODUCT_ID_ABC, requestProduct);
+
+        verify(productRepository).findById(PRODUCT_ID_ABC);
+        assertEquals("Sampo Cap Bang", existingProduct.getProductName());
+        assertEquals(50, existingProduct.getProductQuantity());
+    }
+
 }
