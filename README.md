@@ -1,17 +1,23 @@
 # Eshop (Spring Boot) 
 Link : https://a-made-shandy-krisnanda-modul-7a19d7cc45a6.herokuapp.com
-## Refleksi 4.2
+## Reflection
 
-### 1) Daftar code quality issue yang diperbaiki dan strategi perbaikannya
+### 1) Explain what principles you apply to your project
+Saya menerapkan:
+- SRP: `Controller` fokus HTTP flow, `Service` fokus business logic, `Repository` fokus data access.
+- OCP: perilaku data layer bisa diperluas lewat `ProductRepositoryPort` dan `CarRepositoryPort` tanpa mengubah high-level module.
+- LSP: `CarController` dipisah dari `ProductController` sehingga tidak ada pewarisan yang melanggar substitusi.
+- ISP: interface dipisah per domain (`ProductService`, `CarService`, `ProductRepositoryPort`, `CarRepositoryPort`) agar client hanya bergantung ke method yang dipakai.
+- DIP: `Controller` dan `Service` bergantung ke abstraksi (service/repository interface), bukan implementasi konkret.
 
-Selama latihan ini, saya memperbaiki dua isu utama dari hasil analisis statis kode.
+### 2) Explain the advantages of applying SOLID principles with examples
+- Kode lebih mudah dirawat: perubahan route/product flow tidak ikut mengganggu car flow karena controller sudah terpisah.
+- Kode lebih mudah di-extend: kita bisa menambah implementasi repository lain selama mengikuti `*RepositoryPort`.
+- Testing lebih mudah: dependency dapat di-mock lewat interface, contoh test `CarControllerTest` dan `ProductServiceTest`.
+- Risiko efek samping berkurang: pembagian tanggung jawab membuat perubahan lebih terlokalisasi.
 
-Pertama, pada `ProductController` terdapat duplikasi string literal `"redirect:/product/list"` sebanyak beberapa kali (rule `java:S1192`). Strategi perbaikannya adalah mengekstrak literal tersebut menjadi konstanta `REDIRECT_PRODUCT_LIST`, lalu semua return redirect diganti menggunakan konstanta itu. Dengan cara ini, kode lebih mudah dirawat karena jika path berubah, saya cukup mengubah satu titik saja.
-
-Kedua, terdapat method test kosong pada `ProductRepositoryTest` (rule `java:S1186`). Strategi perbaikannya adalah melengkapi implementasi method test agar benar-benar menguji perilaku repository, bukan dibiarkan kosong. Setelah dilengkapi, setiap test memiliki tujuan yang jelas, assertion yang relevan, dan tidak lagi memunculkan peringatan metode kosong.
-
-### 2) Apakah implementasi sekarang sudah memenuhi definisi CI dan CD?
-
-Menurut saya, implementasi saat ini sudah memenuhi prinsip Continuous Integration karena setiap perubahan pada branch utama dan pull request otomatis menjalankan pipeline build, test, linting/analisis kualitas, serta quality gate. Mekanisme ini membuat masalah cepat terdeteksi sebelum kode digabung atau dirilis, sehingga integrasi berlangsung konsisten.
-
-Dari sisi Continuous Deployment, alur sekarang juga sudah tepat karena proses deploy dijalankan melalui workflow khusus setelah workflow CI selesai dan berstatus sukses. Artinya, rilis ke Heroku tidak berjalan untuk commit yang gagal di tahap integrasi. Selain itu, ada verifikasi pascadeploy untuk memastikan aplikasi benar-benar aktif, sehingga proses deploy bukan hanya otomatis, tetapi juga tervalidasi.
+### 3) Explain the disadvantages of not applying SOLID principles with examples
+- Coupling tinggi: jika controller langsung memakai class implementasi, perubahan kecil di low-level module bisa merambat ke banyak file.
+- Sulit dikembangkan: tanpa OCP/port, setiap penambahan variasi data access cenderung memaksa modifikasi class yang sudah stabil.
+- Sulit diuji: tanpa DIP/ISP, unit test jadi berat karena object bergantung pada banyak detail konkret.
+- Rawan regresi: ketika tanggung jawab campur dalam satu class, satu perubahan kecil bisa merusak fitur lain yang tidak terkait.

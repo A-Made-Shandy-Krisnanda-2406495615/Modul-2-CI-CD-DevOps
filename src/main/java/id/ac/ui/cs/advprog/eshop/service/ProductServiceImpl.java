@@ -1,7 +1,7 @@
 package id.ac.ui.cs.advprog.eshop.service;
 
 import id.ac.ui.cs.advprog.eshop.model.Product;
-import id.ac.ui.cs.advprog.eshop.repository.ProductRepository;
+import id.ac.ui.cs.advprog.eshop.repository.ProductRepositoryPort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -12,9 +12,9 @@ import java.util.UUID;
 @Service
 public class ProductServiceImpl implements ProductService{
 
-    private final ProductRepository productRepository;
+    private final ProductRepositoryPort productRepository;
 
-    public ProductServiceImpl(ProductRepository productRepository) {
+    public ProductServiceImpl(ProductRepositoryPort productRepository) {
         this.productRepository = productRepository;
     }
 
@@ -42,18 +42,15 @@ public class ProductServiceImpl implements ProductService{
 
     @Override
     public Product findById(String id) {
-        return productRepository.findById(id);
+        return productRepository.findById(id).orElse(null);
     }
 
-    @Override
-    public Product edit(Product product) {
-        return productRepository.edit(product);
-    }
 
     @Override
     public void update(String id, Product product) {
-        Product oldProduct = productRepository.findById(id);
-        oldProduct.setProductName(product.getProductName());
-        oldProduct.setProductQuantity(product.getProductQuantity());
+        productRepository.findById(id).ifPresent(existingProduct -> {
+            existingProduct.setProductName(product.getProductName());
+            existingProduct.setProductQuantity(product.getProductQuantity());
+        });
     }
 }

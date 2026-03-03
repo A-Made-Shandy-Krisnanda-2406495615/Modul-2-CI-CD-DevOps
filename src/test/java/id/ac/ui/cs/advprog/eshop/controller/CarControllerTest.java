@@ -1,7 +1,8 @@
 package id.ac.ui.cs.advprog.eshop.controller;
 
 import id.ac.ui.cs.advprog.eshop.model.Car;
-import id.ac.ui.cs.advprog.eshop.service.CarServiceImpl;
+import id.ac.ui.cs.advprog.eshop.service.CarService;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -21,15 +22,16 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class CarControllerTest {
     private static final String CAR_ID = "CAR-001";
+    private static final String REDIRECT_CAR_LIST = "redirect:/car/listCar";
 
     @Mock
-    private CarServiceImpl carService;
+    private CarService carService;
 
     @Mock
     private Model model;
 
     @InjectMocks
-    private CarController controller;
+    public CarController controller;
 
     @Test
     void testCreateCarPage() {
@@ -49,7 +51,7 @@ class CarControllerTest {
         String view = controller.createCarPost(car, model);
 
         verify(carService).create(car);
-        assertEquals("redirect:listCar", view);
+        assertEquals(REDIRECT_CAR_LIST, view);
     }
 
     @Test
@@ -85,7 +87,7 @@ class CarControllerTest {
         String view = controller.editCarPost(car, model);
 
         verify(carService).update(CAR_ID, car);
-        assertEquals("redirect:listCar", view);
+        assertEquals(REDIRECT_CAR_LIST, view);
     }
 
     @Test
@@ -93,6 +95,6 @@ class CarControllerTest {
         String view = controller.deteleCar(CAR_ID);
 
         verify(carService).deleteCarById(CAR_ID);
-        assertEquals("redirect:listCar", view);
+        assertEquals(REDIRECT_CAR_LIST, view);
     }
 }

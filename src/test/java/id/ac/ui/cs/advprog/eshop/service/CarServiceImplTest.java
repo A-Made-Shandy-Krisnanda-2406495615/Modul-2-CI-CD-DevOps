@@ -9,8 +9,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -59,11 +61,19 @@ class CarServiceImplTest {
     @Test
     void testFindById() {
         Car car = buildCar(CAR_ID_001, CAR_NAME_BMW, COLOR_BLACK, 2);
-        when(carRepository.findById(CAR_ID_001)).thenReturn(car);
+        when(carRepository.findById(CAR_ID_001)).thenReturn(Optional.of(car));
 
         Car foundCar = carService.findById(CAR_ID_001);
 
         assertSame(car, foundCar);
+        verify(carRepository).findById(CAR_ID_001);
+    }
+
+    @Test
+    void testFindByIdWhenMissingShouldReturnNull() {
+        when(carRepository.findById(CAR_ID_001)).thenReturn(Optional.empty());
+
+        assertNull(carService.findById(CAR_ID_001));
         verify(carRepository).findById(CAR_ID_001);
     }
 
