@@ -2,6 +2,7 @@ package id.ac.ui.cs.advprog.eshop.model;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -78,6 +79,34 @@ class PaymentTest {
                 "address", "Jl. Margonda Raya No. 100",
                 "deliveryFee", ""
         );
+
+        Payment payment = new Payment("COD", paymentData);
+
+        assertEquals("REJECTED", payment.getStatus());
+    }
+
+    @Test
+    void testCreatePaymentWithNullVoucherCode() {
+        Map<String, String> paymentData = new HashMap<>();
+
+        Payment payment = new Payment("VOUCHER_CODE", paymentData);
+
+        assertEquals("REJECTED", payment.getStatus());
+    }
+
+    @Test
+    void testCreatePaymentWithUnknownMethod() {
+        Map<String, String> paymentData = new HashMap<>();
+
+        Payment payment = new Payment("TRANSFER_BANK", paymentData);
+
+        assertEquals("REJECTED", payment.getStatus());
+    }
+
+    @Test
+    void testCreatePaymentWithNullCodAddress() {
+        Map<String, String> paymentData = new HashMap<>();
+        paymentData.put("deliveryFee", "20000");
 
         Payment payment = new Payment("COD", paymentData);
 

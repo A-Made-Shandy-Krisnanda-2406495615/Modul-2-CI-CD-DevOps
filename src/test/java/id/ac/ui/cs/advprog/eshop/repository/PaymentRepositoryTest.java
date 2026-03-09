@@ -60,6 +60,15 @@ class PaymentRepositoryTest {
     }
 
     @Test
+    void testFindByIdIfIdNotFoundWhenDataExists() {
+        paymentRepository.save(payment1);
+
+        Payment findResult = paymentRepository.findById("zczc");
+
+        assertNull(findResult);
+    }
+
+    @Test
     void testFindAll() {
         paymentRepository.save(payment1);
         paymentRepository.save(payment2);

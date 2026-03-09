@@ -101,6 +101,17 @@ class CarRepositoryTest {
     }
 
     @Test
+    void testUpdateShouldReturnNullWhenDifferentCarExists() {
+        Car existingCar = buildCar(CAR_ID_001, CAR_NAME_BMW, COLOR_BLACK, 2);
+        carRepository.create(existingCar);
+        Car newData = buildCar(CAR_ID_404, CAR_NAME_PORSCHE, COLOR_RED, 9);
+
+        Car updatedCar = carRepository.update(CAR_ID_404, newData);
+
+        assertNull(updatedCar);
+    }
+
+    @Test
     void testDeleteShouldRemoveMatchingCar() {
         Car firstCar = buildCar(CAR_ID_001, CAR_NAME_BMW, COLOR_BLACK, 2);
         Car secondCar = buildCar(CAR_ID_002, CAR_NAME_AUDI, COLOR_WHITE, 3);

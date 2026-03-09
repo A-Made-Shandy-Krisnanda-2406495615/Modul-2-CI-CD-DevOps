@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.verify;
@@ -41,6 +43,28 @@ class CarServiceImplTest {
         Car createdCar = carService.create(car);
 
         assertSame(car, createdCar);
+        verify(carRepository).create(car);
+    }
+
+    @Test
+    void testCreateWhenCarIdNullShouldGenerateId() {
+        Car car = buildCar(null, CAR_NAME_BMW, COLOR_BLACK, 2);
+
+        Car createdCar = carService.create(car);
+
+        assertNotNull(createdCar.getCarId());
+        assertFalse(createdCar.getCarId().isBlank());
+        verify(carRepository).create(car);
+    }
+
+    @Test
+    void testCreateWhenCarIdBlankShouldGenerateId() {
+        Car car = buildCar("   ", CAR_NAME_BMW, COLOR_BLACK, 2);
+
+        Car createdCar = carService.create(car);
+
+        assertNotNull(createdCar.getCarId());
+        assertFalse(createdCar.getCarId().isBlank());
         verify(carRepository).create(car);
     }
 

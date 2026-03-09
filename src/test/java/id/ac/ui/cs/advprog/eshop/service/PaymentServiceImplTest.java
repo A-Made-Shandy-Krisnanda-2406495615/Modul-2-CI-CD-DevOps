@@ -133,6 +133,21 @@ class PaymentServiceImplTest {
     }
 
     @Test
+    void testSetStatusToUnknownShouldNotChangeOrderStatus() {
+        Payment payment = new Payment(order, "COD", Map.of(
+                "address", "Jl. Margonda Raya No. 100",
+                "deliveryFee", "20000"
+        ));
+        doReturn(payment).when(paymentRepository).save(payment);
+
+        Payment result = paymentService.setStatus(payment, "PENDING_REVIEW");
+
+        assertEquals("PENDING_REVIEW", result.getStatus());
+        assertEquals(OrderStatus.WAITING_PAYMENT.getValue(), order.getStatus());
+        verify(paymentRepository, times(1)).save(payment);
+    }
+
+    @Test
     void testGetPaymentIfFound() {
         Payment payment = new Payment(order, "VOUCHER_CODE", Map.of(
                 "voucherCode", "ESHOP1234ABC5678"
