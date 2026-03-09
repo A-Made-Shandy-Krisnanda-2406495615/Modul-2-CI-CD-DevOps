@@ -19,6 +19,7 @@ public class Payment {
     private static final String VOUCHER_PATTERN = "^ESHOP\\d{4}[A-Za-z]{3}\\d{4}$";
 
     private String id;
+    private Order order;
     private String method;
     private String status;
     private Map<String, String> paymentData;
@@ -56,5 +57,10 @@ public class Payment {
 
     private boolean isNonEmpty(String value) {
         return value != null && !value.isEmpty();
+    }
+
+    public Payment(Order order, String method, Map<String, String> paymentData) {
+        this(method, paymentData);
+        this.order = order;
     }
 }
