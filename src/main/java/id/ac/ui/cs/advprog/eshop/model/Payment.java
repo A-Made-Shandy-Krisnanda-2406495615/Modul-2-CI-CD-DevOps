@@ -9,6 +9,15 @@ import java.util.UUID;
 @Getter
 @Setter
 public class Payment {
+    private static final String METHOD_VOUCHER_CODE = "VOUCHER_CODE";
+    private static final String METHOD_COD = "COD";
+    private static final String STATUS_SUCCESS = "SUCCESS";
+    private static final String STATUS_REJECTED = "REJECTED";
+    private static final String KEY_VOUCHER_CODE = "voucherCode";
+    private static final String KEY_ADDRESS = "address";
+    private static final String KEY_DELIVERY_FEE = "deliveryFee";
+    private static final String VOUCHER_PATTERN = "^ESHOP\\d{4}[A-Za-z]{3}\\d{4}$";
+
     private String id;
     private String method;
     private String status;
@@ -19,12 +28,16 @@ public class Payment {
         this.method = method;
         this.paymentData = paymentData;
 
-        if ("VOUCHER_CODE".equals(method)) {
-            this.status = isValidVoucherCode(paymentData.get("voucherCode")) ? "SUCCESS" : "REJECTED";
-        } else if ("COD".equals(method)) {
-            this.status = isValidCodData(paymentData) ? "SUCCESS" : "REJECTED";
+        if (METHOD_VOUCHER_CODE.equals(method)) {
+            this.status = isValidVoucherCode(paymentData.get(KEY_VOUCHER_CODE))
+                    ? STATUS_SUCCESS
+                    : STATUS_REJECTED;
+        } else if (METHOD_COD.equals(method)) {
+            this.status = isValidCodData(paymentData)
+                    ? STATUS_SUCCESS
+                    : STATUS_REJECTED;
         } else {
-            this.status = "REJECTED";
+            this.status = STATUS_REJECTED;
         }
     }
 
@@ -32,12 +45,12 @@ public class Payment {
         if (voucherCode == null) {
             return false;
         }
-        return voucherCode.matches("^ESHOP\\d{4}[A-Za-z]{3}\\d{4}$");
+        return voucherCode.matches(VOUCHER_PATTERN);
     }
 
     private boolean isValidCodData(Map<String, String> paymentData) {
-        String address = paymentData.get("address");
-        String deliveryFee = paymentData.get("deliveryFee");
+        String address = paymentData.get(KEY_ADDRESS);
+        String deliveryFee = paymentData.get(KEY_DELIVERY_FEE);
         return isNonEmpty(address) && isNonEmpty(deliveryFee);
     }
 
