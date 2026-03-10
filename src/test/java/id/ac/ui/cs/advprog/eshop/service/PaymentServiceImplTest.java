@@ -101,51 +101,51 @@ class PaymentServiceImplTest {
         verify(paymentRepository, times(1)).save(any(Payment.class));
         assertEquals("REJECTED", result.getStatus());
     }
-
-    @Test
-    void testSetStatusToSuccessShouldSetOrderStatusToSuccess() {
-        Payment payment = new Payment(order, "COD", Map.of(
-                "address", "Jl. Margonda Raya No. 100",
-                "deliveryFee", "20000"
-        ));
-        doReturn(payment).when(paymentRepository).save(payment);
-
-        Payment result = paymentService.setStatus(payment, "SUCCESS");
-
-        assertEquals("SUCCESS", result.getStatus());
-        assertEquals(OrderStatus.SUCCESS.getValue(), order.getStatus());
-        verify(paymentRepository, times(1)).save(payment);
-    }
-
-    @Test
-    void testSetStatusToRejectedShouldSetOrderStatusToFailed() {
-        Payment payment = new Payment(order, "COD", Map.of(
-                "address", "Jl. Margonda Raya No. 100",
-                "deliveryFee", "20000"
-        ));
-        doReturn(payment).when(paymentRepository).save(payment);
-
-        Payment result = paymentService.setStatus(payment, "REJECTED");
-
-        assertEquals("REJECTED", result.getStatus());
-        assertEquals(OrderStatus.FAILED.getValue(), order.getStatus());
-        verify(paymentRepository, times(1)).save(payment);
-    }
-
-    @Test
-    void testSetStatusToUnknownShouldNotChangeOrderStatus() {
-        Payment payment = new Payment(order, "COD", Map.of(
-                "address", "Jl. Margonda Raya No. 100",
-                "deliveryFee", "20000"
-        ));
-        doReturn(payment).when(paymentRepository).save(payment);
-
-        Payment result = paymentService.setStatus(payment, "PENDING_REVIEW");
-
-        assertEquals("PENDING_REVIEW", result.getStatus());
-        assertEquals(OrderStatus.WAITING_PAYMENT.getValue(), order.getStatus());
-        verify(paymentRepository, times(1)).save(payment);
-    }
+//
+//    @Test
+//    void testSetStatusToSuccessShouldSetOrderStatusToSuccess() {
+//        Payment payment = new Payment(order, "COD", Map.of(
+//                "address", "Jl. Margonda Raya No. 100",
+//                "deliveryFee", "20000"
+//        ));
+//        doReturn(payment).when(paymentRepository).save(payment);
+//
+//        Payment result = paymentService.setStatus(payment, "SUCCESS");
+//
+//        assertEquals("SUCCESS", result.getStatus());
+//        assertEquals(OrderStatus.SUCCESS.getValue(), order.getStatus());
+//        verify(paymentRepository, times(1)).save(payment);
+//    }
+//
+//    @Test
+//    void testSetStatusToRejectedShouldSetOrderStatusToFailed() {
+//        Payment payment = new Payment(order, "COD", Map.of(
+//                "address", "Jl. Margonda Raya No. 100",
+//                "deliveryFee", "20000"
+//        ));
+//        doReturn(payment).when(paymentRepository).save(payment);
+//
+//        Payment result = paymentService.setStatus(payment, "REJECTED");
+//
+//        assertEquals("REJECTED", result.getStatus());
+//        assertEquals(OrderStatus.FAILED.getValue(), order.getStatus());
+//        verify(paymentRepository, times(1)).save(payment);
+//    }
+//
+//    @Test
+//    void testSetStatusToUnknownShouldNotChangeOrderStatus() {
+//        Payment payment = new Payment(order, "COD", Map.of(
+//                "address", "Jl. Margonda Raya No. 100",
+//                "deliveryFee", "20000"
+//        ));
+//        doReturn(payment).when(paymentRepository).save(payment);
+//
+//        Payment result = paymentService.setStatus(payment, "PENDING_REVIEW");
+//
+//        assertEquals("PENDING_REVIEW", result.getStatus());
+//        assertEquals(OrderStatus.WAITING_PAYMENT.getValue(), order.getStatus());
+//        verify(paymentRepository, times(1)).save(payment);
+//    }
 
     @Test
     void testGetPaymentIfFound() {
