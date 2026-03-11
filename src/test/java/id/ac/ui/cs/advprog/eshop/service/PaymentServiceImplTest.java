@@ -27,6 +27,15 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class PaymentServiceImplTest {
+    private static final String KEY_VOUCHER_CODE = "voucherCode";
+    private static final String KEY_ADDRESS = "address";
+    private static final String KEY_DELIVERY_FEE = "deliveryFee";
+    private static final String METHOD_VOUCHER_CODE = "VOUCHER_CODE";
+    private static final String METHOD_COD = "COD";
+    private static final String STATUS_SUCCESS = "SUCCESS";
+    private static final String STATUS_REJECTED = "REJECTED";
+    private static final String ADDRESS = "Jl. Margonda Raya No. 100";
+    private static final String DELIVERY_FEE = "20000";
 
     @InjectMocks
     PaymentServiceImpl paymentService;
@@ -51,92 +60,92 @@ class PaymentServiceImplTest {
 
     @Test
     void testAddPaymentWithValidVoucherCode() {
-        Map<String, String> paymentData = Map.of("voucherCode", "ESHOP1234ABC5678");
+        Map<String, String> paymentData = Map.of(KEY_VOUCHER_CODE, "ESHOP1234ABC5678");
         doAnswer(invocation -> invocation.getArgument(0)).when(paymentRepository).save(any(Payment.class));
 
-        Payment result = paymentService.addPayment(order, "VOUCHER_CODE", paymentData);
+        Payment result = paymentService.addPayment(order, METHOD_VOUCHER_CODE, paymentData);
 
         verify(paymentRepository, times(1)).save(any(Payment.class));
-        assertEquals("VOUCHER_CODE", result.getMethod());
-        assertEquals("SUCCESS", result.getStatus());
+        assertEquals(METHOD_VOUCHER_CODE, result.getMethod());
+        assertEquals(STATUS_SUCCESS, result.getStatus());
         assertEquals(order, result.getOrder());
     }
 
     @Test
     void testAddPaymentWithInvalidVoucherCode() {
-        Map<String, String> paymentData = Map.of("voucherCode", "MEOW1234ABC5678");
+        Map<String, String> paymentData = Map.of(KEY_VOUCHER_CODE, "MEOW1234ABC5678");
         doAnswer(invocation -> invocation.getArgument(0)).when(paymentRepository).save(any(Payment.class));
 
-        Payment result = paymentService.addPayment(order, "VOUCHER_CODE", paymentData);
+        Payment result = paymentService.addPayment(order, METHOD_VOUCHER_CODE, paymentData);
 
         verify(paymentRepository, times(1)).save(any(Payment.class));
-        assertEquals("REJECTED", result.getStatus());
+        assertEquals(STATUS_REJECTED, result.getStatus());
     }
 
     @Test
     void testAddPaymentWithValidCodData() {
         Map<String, String> paymentData = Map.of(
-                "address", "Jl. Margonda Raya No. 100",
-                "deliveryFee", "20000"
+                KEY_ADDRESS, ADDRESS,
+                KEY_DELIVERY_FEE, DELIVERY_FEE
         );
         doAnswer(invocation -> invocation.getArgument(0)).when(paymentRepository).save(any(Payment.class));
 
-        Payment result = paymentService.addPayment(order, "COD", paymentData);
+        Payment result = paymentService.addPayment(order, METHOD_COD, paymentData);
 
         verify(paymentRepository, times(1)).save(any(Payment.class));
-        assertEquals("SUCCESS", result.getStatus());
+        assertEquals(STATUS_SUCCESS, result.getStatus());
         assertEquals(order, result.getOrder());
     }
 
     @Test
     void testAddPaymentWithInvalidCodData() {
         Map<String, String> paymentData = Map.of(
-                "address", "",
-                "deliveryFee", "20000"
+                KEY_ADDRESS, "",
+                KEY_DELIVERY_FEE, DELIVERY_FEE
         );
         doAnswer(invocation -> invocation.getArgument(0)).when(paymentRepository).save(any(Payment.class));
 
-        Payment result = paymentService.addPayment(order, "COD", paymentData);
+        Payment result = paymentService.addPayment(order, METHOD_COD, paymentData);
 
         verify(paymentRepository, times(1)).save(any(Payment.class));
-        assertEquals("REJECTED", result.getStatus());
+        assertEquals(STATUS_REJECTED, result.getStatus());
     }
 
     @Test
     void testSetStatusToSuccessShouldSetOrderStatusToSuccess() {
-        Payment payment = new Payment(order, "COD", Map.of(
-                "address", "Jl. Margonda Raya No. 100",
-                "deliveryFee", "20000"
+        Payment payment = new Payment(order, METHOD_COD, Map.of(
+                KEY_ADDRESS, ADDRESS,
+                KEY_DELIVERY_FEE, DELIVERY_FEE
         ));
         doReturn(payment).when(paymentRepository).save(payment);
 
-        Payment result = paymentService.setStatus(payment, "SUCCESS");
+        Payment result = paymentService.setStatus(payment, STATUS_SUCCESS);
 
-        assertEquals("SUCCESS", result.getStatus());
+        assertEquals(STATUS_SUCCESS, result.getStatus());
         assertEquals(OrderStatus.SUCCESS.getValue(), order.getStatus());
         verify(paymentRepository, times(1)).save(payment);
     }
 
     @Test
     void testSetStatusToRejectedShouldSetOrderStatusToFailed() {
-        Payment payment = new Payment(order, "COD", Map.of(
-                "address", "Jl. Margonda Raya No. 100",
-                "deliveryFee", "20000"
+        Payment payment = new Payment(order, METHOD_COD, Map.of(
+                KEY_ADDRESS, ADDRESS,
+                KEY_DELIVERY_FEE, DELIVERY_FEE
         ));
         doReturn(payment).when(paymentRepository).save(payment);
 
-        Payment result = paymentService.setStatus(payment, "REJECTED");
+        Payment result = paymentService.setStatus(payment, STATUS_REJECTED);
 
-        assertEquals("REJECTED", result.getStatus());
+        assertEquals(STATUS_REJECTED, result.getStatus());
         assertEquals(OrderStatus.FAILED.getValue(), order.getStatus());
         verify(paymentRepository, times(1)).save(payment);
     }
 
     @Test
     void testSetStatusToUnknownShouldNotChangeOrderStatus() {
-        Payment payment = new Payment(order, "COD", Map.of(
-                "address", "Jl. Margonda Raya No. 100",
-                "deliveryFee", "20000"
+        Payment payment = new Payment(order, METHOD_COD, Map.of(
+                KEY_ADDRESS, ADDRESS,
+                KEY_DELIVERY_FEE, DELIVERY_FEE
         ));
         doReturn(payment).when(paymentRepository).save(payment);
 
@@ -149,8 +158,8 @@ class PaymentServiceImplTest {
 
     @Test
     void testGetPaymentIfFound() {
-        Payment payment = new Payment(order, "VOUCHER_CODE", Map.of(
-                "voucherCode", "ESHOP1234ABC5678"
+        Payment payment = new Payment(order, METHOD_VOUCHER_CODE, Map.of(
+                KEY_VOUCHER_CODE, "ESHOP1234ABC5678"
         ));
         doReturn(payment).when(paymentRepository).findById(payment.getId());
 
@@ -167,12 +176,12 @@ class PaymentServiceImplTest {
 
     @Test
     void testGetAllPayments() {
-        Payment payment1 = new Payment(order, "VOUCHER_CODE", Map.of(
-                "voucherCode", "ESHOP1234ABC5678"
+        Payment payment1 = new Payment(order, METHOD_VOUCHER_CODE, Map.of(
+                KEY_VOUCHER_CODE, "ESHOP1234ABC5678"
         ));
-        Payment payment2 = new Payment(order, "COD", Map.of(
-                "address", "Jl. Margonda Raya No. 100",
-                "deliveryFee", "20000"
+        Payment payment2 = new Payment(order, METHOD_COD, Map.of(
+                KEY_ADDRESS, ADDRESS,
+                KEY_DELIVERY_FEE, DELIVERY_FEE
         ));
         List<Payment> payments = List.of(payment1, payment2);
         doReturn(payments).when(paymentRepository).findAll();

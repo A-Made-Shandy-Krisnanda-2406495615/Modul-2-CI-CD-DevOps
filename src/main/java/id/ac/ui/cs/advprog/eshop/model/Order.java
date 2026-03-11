@@ -35,15 +35,18 @@ public class Order {
 
     public Order(String id, List<Product> products, long orderTime, String author, String status) {
         this(id, products, orderTime, author);
-
-        this.setStatus(status);
+        validateStatus(status);
+        this.status = status;
     }
 
     public void setStatus(String status) {
+        validateStatus(status);
+        this.status = status;
+    }
+
+    private static void validateStatus(String status) {
         if (!OrderStatus.contains(status)) {
             throw new IllegalArgumentException();
-        } else {
-            this.status = status;
         }
     }
 }
