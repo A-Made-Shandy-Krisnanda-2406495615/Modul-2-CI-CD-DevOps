@@ -48,6 +48,8 @@ dependencies {
 tasks.register<Test>("unitTest") {
     description = "Runs unit tests."
     group = "verification"
+    testClassesDirs = sourceSets["test"].output.classesDirs
+    classpath = sourceSets["test"].runtimeClasspath
 
     filter {
         excludeTestsMatching("*FunctionalTest")
@@ -57,6 +59,8 @@ tasks.register<Test>("unitTest") {
 tasks.register<Test>("functionalTest") {
     description = "Runs functional tests."
     group = "verification"
+    testClassesDirs = sourceSets["test"].output.classesDirs
+    classpath = sourceSets["test"].runtimeClasspath
 
     filter {
         includeTestsMatching("*FunctionalTest")
